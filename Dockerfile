@@ -10,6 +10,9 @@ RUN npm ci
 # 复制源码
 COPY . .
 
+# 确保关键目录存在（避免 Docker COPY 因目录不存在而失败）
+RUN mkdir -p public prisma
+
 # 生成 Prisma Client
 RUN npx prisma generate
 
@@ -27,13 +30,15 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # 安装必要的系统依赖
 RUN apk add --no-cache libc6-compat
 
-# 复制构建产物
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# 确保目标目录存在，再复制
+RUN mkdir -p public .next/static prisma node_modules/.prisma node_modules/@prisma
+
+COPY --from=builder /app/public/ ./public/
+COPY --from=builder /app/.next/standalone/ ./
+COPY --from=builder /app/.next/static/ ./.next/static/
+COPY --from=builder /app/prisma/ ./prisma/
+COPY --from=builder /app/node_modules/.prisma/ ./node_modules/.prisma/
+COPY --from=builder /app/node_modules/@prisma/ ./node_modules/@prisma/
 
 # 复制 package.json 用于 prisma 命令
 COPY package.json ./
