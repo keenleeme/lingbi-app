@@ -13,7 +13,12 @@ SERVER_PASS="2wsxVFR_"
 REMOTE_DIR="/root/lingbi-app"
 
 # ---- 请修改为你的真实 API Key ----
+# 支持 OpenAI / DeepSeek / 其他兼容接口
+# DeepSeek 示例: sk-xxxx, base_url=https://api.deepseek.com/v1, model=deepseek-chat
+# OpenAI  示例: sk-xxxx, base_url=https://api.openai.com/v1,   model=gpt-4o
 OPENAI_API_KEY="sk-your-api-key-here"
+OPENAI_BASE_URL="https://api.openai.com/v1"
+AI_MODEL="gpt-4o"
 NEXTAUTH_SECRET=$(openssl rand -base64 32 2>/dev/null || python3 -c "import secrets; print(secrets.token_urlsafe(32))")
 
 echo "========================================"
@@ -117,8 +122,8 @@ cat > .env << EOF
 OPENAI_API_KEY=${OPENAI_API_KEY}
 NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 NEXTAUTH_URL=http://${SERVER_IP}:3000
-OPENAI_BASE_URL=https://api.openai.com/v1
-AI_MODEL=gpt-4o
+OPENAI_BASE_URL=${OPENAI_BASE_URL}
+AI_MODEL=${AI_MODEL}
 EOF
 
 echo "构建 Docker 镜像（首次约 3-5 分钟）..."
